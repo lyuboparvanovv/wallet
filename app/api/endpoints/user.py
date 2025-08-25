@@ -3,12 +3,12 @@ from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from schemas.token import Token
-from schemas.user import CreateUser, UpdateUser, UserWithCards
+from schemas.user import CreateUser, UpdateUser, UserWholeInfo
 from fastapi.security import OAuth2PasswordRequestForm
 from typing import Annotated
 
 from services.auth import authenticate_user, ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token, get_current_user
-from services.user import create_user, update_user, get_user_with_cards, add_money
+from services.user import create_user, update_user, add_money, add_friend, get_user_whole_info
 
 router = APIRouter()
 
@@ -38,10 +38,10 @@ def login_for_access_token(
     )
     return Token(access_token=access_token, token_type="bearer")
 
-@router.get("/me", response_model=UserWithCards)
+@router.get("/me", response_model=UserWholeInfo)
 def read_users_me(current_user = Depends(get_current_user)):
 
-    user = get_user_with_cards(user_id=current_user.id)
+    user = get_user_whole_info(user_id=current_user.id)
 
     return user
 
@@ -58,3 +58,14 @@ def adding_money_to_card(amount: float,current_user =  Depends(get_current_user)
     updated_user = add_money(current_user.username, amount)
 
     return updated_user
+
+@router.post("/add-contact")
+def add_new_contact(contact_username, current_user = Depends(get_current_user)):
+
+    new_contact = add_friend(contact_username, current_user.id)
+
+    if not new_contact:
+
+        return HTTPException(status_code=404, detail="User not found!")
+
+    return new_contact

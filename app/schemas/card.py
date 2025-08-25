@@ -15,3 +15,6 @@ class CardOut(BaseModel):
     number: str
     exp_date: date
     is_credit: bool
+
+    class Config:
+        from_attributes = True
