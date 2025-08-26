@@ -1,8 +1,10 @@
 from db.database import get_db
+from models import friends
 from models.user import User
 from schemas.card import CardOut
 from schemas.user import CreateUser, UpdateUser, TransactionOut, UserWholeInfo, FriendsOut
 from sqlalchemy.orm import joinedload
+
 
 def create_user(user: CreateUser):
     with get_db() as db:
@@ -34,8 +36,8 @@ def get_user(username: str):
 
         return user
 
-def update_user(username: str, updated_user: UpdateUser):
 
+def update_user(username: str, updated_user: UpdateUser):
     with get_db() as db:
 
         user = db.query(User).filter_by(username=username).first()
@@ -54,8 +56,8 @@ def update_user(username: str, updated_user: UpdateUser):
 
         return user
 
-def get_user_whole_info(user_id):
 
+def get_user_whole_info(user_id):
     with (get_db() as db):
         user = db.query(User).options(
             joinedload(User.cards),
@@ -94,6 +96,7 @@ def get_user_whole_info(user_id):
             transactions=transactions
         )
 
+
 def add_money(username, amount: float):
 
     with get_db() as db:
@@ -107,7 +110,6 @@ def add_money(username, amount: float):
         return user
 
 def add_friend(friend_username: str, my_id: int):
-
     with get_db() as db:
         friend = db.query(User).filter_by(username=friend_username).first()
 
@@ -123,3 +125,15 @@ def add_friend(friend_username: str, my_id: int):
         db.refresh(current_user)
 
         return current_user
+
+
+def delete_user(user_id: int):
+    with get_db() as db:
+        user = db.query(User).filter_by(id=user_id).first()
+        if not user:
+            return None
+
+        db.delete(user)
+        db.commit()
+
+        return user

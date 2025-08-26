@@ -13,10 +13,10 @@ def send_money_to_user(sender_name, receiver_name, amount):
         receiver = db.query(User).filter_by(username=receiver_name).first()
 
         if not receiver:
-            return HTTPException(status_code=404, detail="Receiver not found!")
+            raise HTTPException(status_code=404, detail="Receiver not found!")
 
         if sender.money < amount:
-            return HTTPException(status_code=400, detail="Not enough money.")
+            raise HTTPException(status_code=400, detail="Not enough money.")
 
         sender.money -= amount
         receiver.money += amount

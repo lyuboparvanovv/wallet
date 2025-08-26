@@ -25,3 +25,15 @@ def create_card(user_id: int, is_credit: bool):
         db.refresh(new_card)
 
         return new_card
+
+def delete_card(card_id: int):
+    with get_db() as db:
+
+        card = db.query(Card).filter_by(id=card_id).first()
+        if not card:
+            return None
+
+        db.delete(card)
+        db.commit()
+
+        return card

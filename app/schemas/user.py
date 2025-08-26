@@ -27,6 +27,18 @@ class CreateUser(UserBase):
                 'Password must contain an uppercase letter, a digit, and a special character (+, -, *, &, ^)')
         return v
 
+class UserOut(BaseModel):
+    username: str
+    email: EmailStr
+    phone_number: str
+    is_admin: Optional[bool] = False
+
+    class Config:
+        from_attributes = True
+
+
+
+
 class UpdateUser(BaseModel):
     password: Optional[str] = None
     phone_number: Optional[str] = None
@@ -47,7 +59,12 @@ class TransactionOut(BaseModel):
     class Config:
         from_attributes = True
 
-class UserWholeInfo(UserBaseWithMoney):
+class UserWholeInfo(BaseModel):
+    username: str
+    email: EmailStr
+    phone_number: str
+    is_admin: Optional[bool] = False
+    money: float
     cards: List[CardOut] = List
     friends: List[FriendsOut] = List
     transactions: List[TransactionOut] = List
